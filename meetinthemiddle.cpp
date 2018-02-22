@@ -56,7 +56,8 @@ typedef priority_queue< char , vector<char> > max_pqc;
 typedef priority_queue<ll, vector<ll > , greater < ll >  > min_pq;
 
 
-ll key[10],k1[10],k2[10],pt[8],temp[10],temp2[10],l[10],r[10],invip[10];
+ll k1[10],k2[10],pt[8],temp[10],temp2[10],l[10],r[10],invip[10],ct[10],ans[10];
+ll sendinkeygen[10];
 ll  p10[] = {2,4,1,6,3,9,0,8,7,5},
     p8[] = {5,2,6,3,7,4,9,8},
     p4[] = {1,3,2,0},
@@ -74,7 +75,7 @@ void leftshift( ll* ar , ll st , ll en )
 }
 
 
-void keygen( )
+void keygen(ll* key)
 {
     
     for ( ll i = 0 ; i < 10 ; i ++)
@@ -130,7 +131,7 @@ void encrypt(ll* temp,ll* with)
     
 }
 
-void sdes( )
+void sdesencrypt( )
 {
     for ( ll i = 0 ; i < 8 ; i ++)
         temp[i] = pt[ip[i]];
@@ -146,34 +147,123 @@ void sdes( )
         invip[ip[i]] = i;
 
     for ( ll i = 0 ; i < 8 ; i ++)
-        cout << temp[invip[i]];
+        ans[i] = temp[invip[i]];
 
 
 
+}
+
+void sdesdecrypt( )
+{
+    for ( ll i = 0 ; i < 8 ; i ++)
+        temp[i] = ct[ip[i]];
+
+    encrypt(temp,k2);
+    
+    for ( ll i = 0 ; i < 4 ; i ++)
+        swap(temp[i],temp[i+4]);
+    
+    encrypt(temp,k1);
+
+    for ( ll i = 0 ; i < 8 ; i ++)
+        invip[ip[i]] = i;
+
+    for ( ll i = 0 ; i < 8 ; i ++)
+        ans[i]=temp[invip[i]];
+
+
+
+}
+
+void printn( ll val )
+{
+    for ( ll i = 0 ; i < 10 ; i ++ )
+    {
+        cout << val%2;
+        val /=2;
+    }
+    cout << endl;
 }
 
 int main()
 {
     ios::sync_with_stdio(false);
     cin.tie(NULL);
-    string s1,s2;
-    cin >> s1 >> s2;
+    
+    ll t;
+    cin >> t;
+    while ( t -- )
+    {
+        string s1,s2;
+        cin >> s1 >> s2;
+        
+        for ( ll i = 0 ; i < s1.size() ; i ++ ) 
+            pt[i] = s1[i] - '0';
+        for ( ll i = 0 ; i < s2.size() ; i ++ )
+            ct[i] = s2[i] - '0';
+
+        map < ll , ll > mark;
+
+        
+
+        for ( ll i = 0 ; i < 1024 ; i ++ )
+        {
+            ll val = i;
+            for ( ll j = 0 ; j < 10 ; j ++ )
+            {
+                sendinkeygen[j] = val%2;
+                val /= 2;
+            }
+            keygen(sendinkeygen);
+            sdesencrypt();
+            ll numb = 0 ,val2 = 1;
+            for ( ll j =0 ; j < 8; j ++)
+            {
+                numb = ( numb + val2*ans[j]);
+                val2*=2;
+            }
+            mark[numb] = i + 1;//mark[numb] stores the key
+
+        }
+
+        
+
+        for ( ll i = 0 ; i < 1024 ; i ++ )
+        {
+            ll val = i;
+            for ( ll j = 0 ; j < 10 ; j ++ )
+            {
+                sendinkeygen[j] = val%2;
+                val /= 2;
+            }
+            keygen(sendinkeygen);
+            sdesdecrypt();
+            ll numb = 0 ,val2 = 1;
+            for ( ll j =0 ; j < 8 ; j ++)
+            {
+                numb = ( numb + val2*ans[j]);
+                val2*=2;
+            }
+
+            if ( mark [ numb ] )
+            {
+                
+                printn(mark[numb]-1);
+                printn(i);
+                break;
+            }
+
+        }
 
 
-    for ( ll i = 0 ; i < s1.size() ; i ++ )
-        key[i] = s1[i] - '0';
-    for ( ll i = 0 ; i < s2.size() ; i ++ )
-        pt[i] = s2[i] - '0';
 
-    keygen();
 
-    sdes();
+    }
 
 
 
 
     
-
 
 
 

@@ -135,12 +135,12 @@ void sdes( )
     for ( ll i = 0 ; i < 8 ; i ++)
         temp[i] = pt[ip[i]];
 
-    encrypt(temp,k1);
+    encrypt(temp,k2);
     
     for ( ll i = 0 ; i < 4 ; i ++)
         swap(temp[i],temp[i+4]);
     
-    encrypt(temp,k2);
+    encrypt(temp,k1);
 
     for ( ll i = 0 ; i < 8 ; i ++)
         invip[ip[i]] = i;
